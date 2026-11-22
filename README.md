@@ -73,3 +73,9 @@ To see sample recurring charges, a price increase, and a possible duplicate, use
 Open **Community** to publish a discussion or explicitly share a savings achievement. Members can like or unlike posts, leave comments, and open another member's profile. **My profile** lets you choose a display name and see your shared posts. A blank display name uses your username. Refresh the feed to see activity from another browser.
 
 Profiles and posts are visible to signed-in community members. Profiles display a username and display name. Achievements are written by their authors, and the feed receives no balances, transaction history, or goal records from the banking features.
+
+## Banknote stories and nearby deals
+
+Open **Community → Banknote stories** and enter the note’s currency code, denomination, serial number, and series if known. Register a note if it is new, then add a city and a story. Other signed-in members who enter matching note details can see its timeline and reveal hidden messages. The reports do not verify where a note has been or who holds it. Enter a city and avoid personal details or precise addresses.
+
+**Explore** shows database-seeded, simulated food and clothing offers in Montréal, Laval, and Toronto. Browse by city and category without sharing location. **Use my location** optionally filters and orders examples within 20 km. Coordinates stay in the browser for that page session, and browser geolocation requires localhost or HTTPS. The sample prices cannot be redeemed.

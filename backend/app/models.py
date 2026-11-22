@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from sqlalchemy import BigInteger, CheckConstraint, Date, DateTime, ForeignKey, String, Text, UniqueConstraint, func
+from sqlalchemy import BigInteger, CheckConstraint, Date, DateTime, ForeignKey, Float, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -121,3 +121,51 @@ class Comment(Base):
     content: Mapped[str] = mapped_column(Text)
     request_id: Mapped[str] = mapped_column(String(36))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class Banknote(Base):
+    __tablename__ = "banknotes"
+    __table_args__ = (
+        UniqueConstraint("currency", "denomination", "serial_number", "series", name="uq_banknote_identity"),
+        CheckConstraint("denomination > 0", name="ck_banknote_positive_denomination"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    currency: Mapped[str] = mapped_column(String(3))
+    denomination: Mapped[int]
+    serial_number: Mapped[str] = mapped_column(String(32))
+    series: Mapped[str] = mapped_column(String(40))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class BanknoteEvent(Base):
+    __tablename__ = "banknote_events"
+    __table_args__ = (UniqueConstraint("user_id", "request_id", name="uq_banknote_event_user_request"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    banknote_id: Mapped[int] = mapped_column(ForeignKey("banknotes.id"), index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    city: Mapped[str] = mapped_column(String(80))
+    message: Mapped[str] = mapped_column(Text)
+    is_hidden: Mapped[bool]
+    request_id: Mapped[str] = mapped_column(String(36))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class Deal(Base):
+    __tablename__ = "deals"
+    __table_args__ = (
+        CheckConstraint("sale_minor >= 0 AND original_minor > sale_minor", name="ck_deal_sale_price"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    store: Mapped[str] = mapped_column(String(80))
+    product: Mapped[str] = mapped_column(String(100))
+    category: Mapped[str] = mapped_column(String(24))
+    city: Mapped[str] = mapped_column(String(80))
+    currency: Mapped[str] = mapped_column(String(3))
+    original_minor: Mapped[int]
+    sale_minor: Mapped[int]
+    latitude: Mapped[float] = mapped_column(Float)
+    longitude: Mapped[float] = mapped_column(Float)
+    expires_on: Mapped[date | None] = mapped_column(Date)

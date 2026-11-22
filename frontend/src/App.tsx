@@ -6,6 +6,8 @@ import { Link, Navigate, NavLink, Outlet, Route, Routes, useLocation, useNavigat
 import { api, ApiError, type User } from "./api"
 import { useAuth } from "./auth"
 import { Community } from "./Community"
+import { BanknoteStories } from "./BanknoteStories"
+import { NearbyDeals } from "./NearbyDeals"
 import { BankingDashboard } from "./BankingDashboard"
 import { MoneyLeaks } from "./MoneyLeaks"
 import { PurchaseAudit } from "./PurchaseAudit"
@@ -18,11 +20,7 @@ const sections = [
   { name: "Home", path: "/", icon: House },
   { name: "Simulator", path: "/simulator", icon: Target },
   { name: "MoneyLeaks", path: "/moneyleaks", icon: ScanSearch },
-  {
-    name: "Explore", path: "/explore", icon: Compass,
-    description: "Find local deals that fit what you already planned to buy.",
-    features: ["Discover nearby offers", "Browse food and clothing deals"],
-  },
+  { name: "Explore", path: "/explore", icon: Compass },
   { name: "Community", path: "/community", icon: Users },
 ]
 
@@ -53,6 +51,7 @@ function AuthPage({ registration = false }: { registration?: boolean }) {
   const returnTo = location.state?.from
   const destination = typeof returnTo === "string" && (
     sections.some(({ path }) => path === returnTo) || /^\/moneyleaks\/audit\/[1-9]\d*$/.test(returnTo)
+    || returnTo === "/community/banknotes"
     || /^\/community\/profiles\/[a-zA-Z0-9_]{3,32}$/.test(returnTo)
   ) ? returnTo : "/"
 
@@ -198,21 +197,11 @@ function CommunityRoute() {
   return <Community key={`${state.user.id}:${username ?? ""}`} token={state.token} onExpired={signOut} viewer={state.user.username} username={username?.toLowerCase()} />
 }
 
-function SectionPage({ section }: { section: (typeof sections)[number] }) {
-  const Icon = section.icon
-  return (
-    <>
-      <section className="hero">
-        <div className="section-icon"><Icon size={25} aria-hidden /></div>
-        <h1>{section.name}</h1>
-        <p>{section.description}</p>
-      </section>
-      <section className="card roadmap">
-        <h2>Planned features</h2>
-        <ul>{section.features?.map((feature) => <li key={feature}>{feature}</li>)}</ul>
-      </section>
-    </>
-  )
+function ExploreRoute({ banknotes = false }: { banknotes?: boolean }) {
+  const { state, signOut } = useAuth()
+  if (state.status !== "signed-in") return null
+  const props = { token: state.token, onExpired: signOut }
+  return banknotes ? <BanknoteStories key={state.user.id} {...props} /> : <NearbyDeals key={state.user.id} {...props} />
 }
 
 export function App() {
@@ -225,8 +214,9 @@ export function App() {
         <Route path="/simulator" element={<Simulator />} />
         <Route path="/moneyleaks" element={<Intelligence />} />
         <Route path="/moneyleaks/audit/:transactionId" element={<Intelligence audit />} />
-        <Route path="/explore" element={<SectionPage section={sections[3]} />} />
+        <Route path="/explore" element={<ExploreRoute />} />
         <Route path="/community" element={<CommunityRoute />} />
+        <Route path="/community/banknotes" element={<ExploreRoute banknotes />} />
         <Route path="/community/profiles/:username" element={<CommunityRoute />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

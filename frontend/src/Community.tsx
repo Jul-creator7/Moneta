@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react"
-import { ArrowLeft, ArrowUpRight, Heart, MessageCircle, RefreshCw, Trophy, Users } from "lucide-react"
+import { ArrowLeft, ArrowUpRight, Banknote, Heart, MessageCircle, RefreshCw, Trophy, Users } from "lucide-react"
 import { Link } from "react-router-dom"
 import { requestError, useAuthenticatedApi } from "./authenticatedApi"
 import { Button } from "./components/ui/button"
@@ -103,6 +103,11 @@ export function Community({ token, onExpired, viewer, username }: {
         </div>
         <p>Community members see your username and display name.</p>
         {editing && <ProfileForm profile={profile} call={call} onSaved={updateProfile} />}
+      </section>}
+
+      {!username && <section className="card bank-demo">
+        <div><h2>Banknote stories</h2><p>Find a note’s community timeline or leave a message for its next holder.</p></div>
+        <Link to="/community/banknotes">Open banknote stories <Banknote size={17} aria-hidden /></Link>
       </section>}
 
       {!username && feed && <PostComposer call={call} disabled={pending} onAdded={(post) => {
