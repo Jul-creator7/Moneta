@@ -5,7 +5,7 @@ import { requestError, useAuthenticatedApi } from "./authenticatedApi"
 import { Button } from "./components/ui/button"
 import {
   communityDate, profilePath, submission, type Comment, type LikeState, type Page, type Post, type PostType, type Profile,
-} from "./community"
+} from "./communityUtils"
 
 type CommunityCall = ReturnType<typeof useAuthenticatedApi>
 

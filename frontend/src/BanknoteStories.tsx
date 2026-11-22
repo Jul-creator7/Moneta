@@ -3,7 +3,7 @@ import { Banknote, LockKeyhole, MapPin, Search } from "lucide-react"
 import { Link } from "react-router-dom"
 import { ApiError } from "./api"
 import { requestError, useAuthenticatedApi } from "./authenticatedApi"
-import { communityDate, submission } from "./community"
+import { communityDate, submission } from "./communityUtils"
 import { Button } from "./components/ui/button"
 
 type Identity = { currency: string; denomination: number; serial_number: string; series: string }
