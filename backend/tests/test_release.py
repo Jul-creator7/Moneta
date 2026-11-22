@@ -71,12 +71,12 @@ def test_coach_sends_only_explicit_summary_and_falls_back(client, monkeypatch):
 
 
 def test_deployed_spa_routes_keep_api_and_assets_separate(tmp_path):
-    (tmp_path / "index.html").write_text("<html>Tandem</html>", encoding="utf-8")
+    (tmp_path / "index.html").write_text("<html>Moneta</html>", encoding="utf-8")
     (tmp_path / "assets").mkdir()
     (tmp_path / "assets" / "app.js").write_text("export {}", encoding="utf-8")
     app = create_app(Settings(jwt_secret="x" * 32, frontend_dist=tmp_path))
     with TestClient(app) as client:
-        assert client.get("/community/banknotes").text == "<html>Tandem</html>"
+        assert client.get("/community/banknotes").text == "<html>Moneta</html>"
         assert client.head("/simulator").status_code == 200
         assert client.get("/assets/app.js").text == "export {}"
         assert client.get("/assets/missing.js").status_code == 404
@@ -115,3 +115,17 @@ def test_demo_workflow_crosses_all_product_sections(client):
     }).status_code == 201
     assert client.post("/api/banknotes/lookup", headers=guest, json=note).json()["events"][0]["message"] == "Happy saving!"
     assert client.get("/api/deals", headers=guest).json()
+
+
+def test_database_rebrand_preserves_existing_default_database(tmp_path, monkeypatch):
+    from app.config import DatabaseSettings
+
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.setenv("DATABASE_DIRECTORY", str(tmp_path))
+    assert DatabaseSettings(_env_file=None).database_url.endswith("/moneta.db")
+    legacy = tmp_path / "tandem.db"
+    legacy.touch()
+    assert DatabaseSettings(_env_file=None).database_url == f"sqlite:///{legacy.as_posix()}"
+    (tmp_path / "moneta.db").touch()
+    assert DatabaseSettings(_env_file=None).database_url.endswith("/moneta.db")
+    assert DatabaseSettings(_env_file=None, database_url="sqlite:///custom.db").database_url == "sqlite:///custom.db"

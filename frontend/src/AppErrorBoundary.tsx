@@ -12,7 +12,7 @@ export class AppErrorBoundary extends Component<{ children: ReactNode }, { faile
     if (!this.state.failed) return this.props.children
     return (
       <main className="status-screen">
-        <p role="alert">Tandem ran into a problem while displaying this page.</p>
+        <p role="alert">Moneta ran into a problem while displaying this page.</p>
         <Button onClick={() => window.location.reload()}>Reload page</Button>
       </main>
     )

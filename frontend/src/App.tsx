@@ -14,7 +14,7 @@ import { PurchaseAudit } from "./PurchaseAudit"
 import { SavingsSimulator } from "./SavingsSimulator"
 import { Button } from "./components/ui/button"
 
-const brand = "Tandem"
+const brand = "Moneta"
 
 const sections = [
   { name: "Home", path: "/", icon: House },
@@ -94,7 +94,7 @@ function AuthPage({ registration = false }: { registration?: boolean }) {
       <section className="auth-form-area">
         <div className="auth-form">
           <h1>{registration ? "Create your account" : "Welcome back"}</h1>
-          <p>{registration ? "Set up your private Tandem workspace." : "Sign in to your Tandem account."}</p>
+          <p>{registration ? "Set up your private Moneta workspace." : "Sign in to your Moneta account."}</p>
           {location.state?.registered && <p className="success" role="status">Account created. Sign in to continue.</p>}
           <form onSubmit={submit}>
             {registration && (
@@ -114,7 +114,7 @@ function AuthPage({ registration = false }: { registration?: boolean }) {
             </Button>
           </form>
           <p className="auth-switch">
-            {registration ? "Already have an account? " : "New to Tandem? "}
+            {registration ? "Already have an account? " : "New to Moneta? "}
             <Link to={registration ? "/login" : "/register"} state={{ from: destination }}>
               {registration ? "Sign in" : "Create an account"}
             </Link>
@@ -136,7 +136,7 @@ function Layout() {
     <div className="app-shell">
       <a className="skip-link" href="#main-content">Skip to main content</a>
       <aside className="sidebar">
-        <Link to="/" aria-label="Tandem home"><Brand /></Link>
+        <Link to="/" aria-label="Moneta home"><Brand /></Link>
         <nav aria-label="Main navigation">
           {sections.map(({ name, path, icon: Icon }) => (
             <NavLink key={path} to={path} end={path !== "/moneyleaks" && path !== "/community"}><Icon size={21} aria-hidden /><span>{name}</span></NavLink>
@@ -147,7 +147,7 @@ function Layout() {
       <div className="workspace">
         <header className="topbar">
           <span className="topbar-title">Personal workspace</span>
-          <Link to="/" className="mobile-brand" aria-label="Tandem home"><Brand /></Link>
+          <Link to="/" className="mobile-brand" aria-label="Moneta home"><Brand /></Link>
           <details className="profile">
             <summary aria-label={`Account menu for ${user.username}`}>
               <span className="avatar">{user.username.slice(0, 2).toUpperCase()}</span>

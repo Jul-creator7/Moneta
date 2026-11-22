@@ -1,6 +1,6 @@
-# Tandem product specification
+# Moneta product specification
 
-Tandem helps people understand spending, plan purchases, and share savings achievements. It is a responsive multi-user web application with simulated finances and individual account ownership.
+Moneta helps people understand spending, plan purchases, and share savings achievements. It is a responsive multi-user web application with simulated finances and individual account ownership.
 
 ## Architecture
 

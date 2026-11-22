@@ -37,7 +37,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         yield
         engine.dispose()
 
-    app = FastAPI(title="Tandem API", lifespan=lifespan)
+    app = FastAPI(title="Moneta API", lifespan=lifespan)
     app.state.settings = settings
     app.state.coach_budget = CoachBudget()
     app.state.sessions = sessionmaker(engine)

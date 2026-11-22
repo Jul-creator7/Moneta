@@ -88,7 +88,7 @@ export function Community({ token, onExpired, viewer, username }: {
     <div className="banking community">
       <section className="bank-hero">
         <div>
-          <p className="bank-eyebrow"><Users size={16} aria-hidden /> {username ? "Community profile" : "Tandem community"}</p>
+          <p className="bank-eyebrow"><Users size={16} aria-hidden /> {username ? "Community profile" : "Moneta community"}</p>
           <h1>{profile?.display_name ?? (username ? `@${username}` : "Community")}</h1>
           <p>{username ? `@${username}` : "Share savings wins, ask questions, and learn from other members."}</p>
         </div>

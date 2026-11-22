@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 import { api, ApiError, type Credentials, type User } from "./api"
 
-const tokenKey = "tandem.access_token"
+const tokenKey = "moneta.access_token"
+const legacyTokenKey = "tandem.access_token"
 type AuthState =
   | { status: "loading" | "signed-out" | "unavailable" }
   | { status: "signed-in"; user: User; token: string }
@@ -19,11 +20,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   function signOut() {
     localStorage.removeItem(tokenKey)
+    localStorage.removeItem(legacyTokenKey)
     setState({ status: "signed-out" })
   }
 
   useEffect(() => {
-    const token = localStorage.getItem(tokenKey)
+    const token = localStorage.getItem(tokenKey) ?? localStorage.getItem(legacyTokenKey)
+    if (token) {
+      localStorage.setItem(tokenKey, token)
+      localStorage.removeItem(legacyTokenKey)
+    }
     if (!token) {
       setState({ status: "signed-out" })
       return

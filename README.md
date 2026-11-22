@@ -1,6 +1,6 @@
-# Tandem
+# Moneta
 
-Tandem is a personal finance and social savings web app. It uses simulated finances.
+Moneta is a personal finance and social savings web app. It uses simulated finances.
 
 ## Local development
 
@@ -44,7 +44,7 @@ npm run build
 
 Registration creates a private user profile. Sign in with the email and password used during registration. Passwords are hashed with Argon2. The browser stores a 30-minute bearer token in local storage for refresh persistence. Scripts running on the same origin can read that token. Logout clears local storage and the browser's session state. An issued token remains valid until expiration. Before a public deployment, revisit session storage, revocation, login throttling, and HTTPS.
 
-SQLite is the local default. Set `DATABASE_URL` to use a different database and install its SQLAlchemy driver. Test the migrations on that database before deployment.
+SQLite is the local default, using `backend/moneta.db` for new installations. Existing installations keep using their original database if no new default database or explicit `DATABASE_URL` is configured. Set `DATABASE_URL` to use a different database and install its SQLAlchemy driver. Test the migrations on that database before deployment.
 
 ## Virtual banking
 
@@ -90,7 +90,7 @@ Explore includes experimental links to official grocery flyers for the demo citi
 
 ## Container deployment
 
-The Docker image builds the frontend and serves it alongside FastAPI from one origin. The container runs migrations on startup and keeps the default SQLite database under `/data`. Use a single app instance with a persistent volume writable by UID `10001`. Set a stable `JWT_SECRET` of 32 or more characters in your hosting secret settings, optionally set the coach key, and use the host's HTTPS endpoint. Set the health check to `/api/health`. The container honors `PORT` and defaults to `8000`.
+The Docker image builds the frontend and serves it alongside FastAPI from one origin. The container runs migrations on startup and keeps the default SQLite database at `/data/moneta.db` for new installations. Use a single app instance with a persistent volume writable by UID `10001`. Set a stable `JWT_SECRET` of 32 or more characters in your hosting secret settings, optionally set the coach key, and use the host's HTTPS endpoint. Set the health check to `/api/health`. The container honors `PORT` and defaults to `8000`.
 
 To test locally with Docker Desktop, run this from the repository root in PowerShell:
 

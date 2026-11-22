@@ -4,10 +4,19 @@ from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+def default_database_url(settings: dict) -> str:
+    directory = settings["database_directory"]
+    current = directory / "moneta.db"
+    legacy = directory / "tandem.db"
+    database = legacy if not current.exists() and legacy.is_file() else current
+    return f"sqlite:///{database.as_posix()}"
+
+
 class DatabaseSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    database_url: str = "sqlite:///./tandem.db"
+    database_directory: Path = Path(".")
+    database_url: str = Field(default_factory=default_database_url)
 
 
 class Settings(DatabaseSettings):
