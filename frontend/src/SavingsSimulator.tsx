@@ -141,7 +141,7 @@ export function SavingsSimulator({ token, onExpired }: { token: string; onExpire
       <section className="bank-hero">
         <div>
           <p className="bank-eyebrow"><Target size={16} aria-hidden /> Savings goals · Simulated CAD</p>
-          <h1>Purchase simulator</h1>
+          <h1>New Savings</h1>
           <p>Set a savings target and see how buying something today could change your timeline.</p>
         </div>
         {data && <div className="bank-total"><span>Unallocated savings</span><strong>{money(data.unallocated_minor)}</strong><span>of {money(data.savings_minor)} in savings</span></div>}

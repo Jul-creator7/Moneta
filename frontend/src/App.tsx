@@ -18,7 +18,7 @@ const brand = "Moneta"
 
 const sections = [
   { name: "Home", path: "/", icon: House },
-  { name: "Simulator", path: "/simulator", icon: Target },
+  { name: "New Savings", path: "/simulator", icon: Target },
   { name: "MoneyLeaks", path: "/moneyleaks", icon: ScanSearch },
   { name: "Explore", path: "/explore", icon: Compass },
   { name: "Community", path: "/community", icon: Users },

@@ -56,7 +56,7 @@ Load demo data into empty accounts from Home. Reset clears the signed-in user's 
 
 ## Savings goals and purchase simulator
 
-In **Simulator**, create a goal with a target amount, an optional target date, and a planned contribution. Transfer simulated money into savings on **Home** and reserve it by setting the goal's total allocation. Lower the allocation to release it. Purchases, bills, and transfers from savings cannot use funds reserved for goals. Resetting the banking simulation clears allocations and keeps goal plans.
+In **New Savings**, create a goal with a target amount, an optional target date, and a planned contribution. Transfer simulated money into savings on **Home** and reserve it by setting the goal's total allocation. Lower the allocation to release it. Purchases, bills, and transfers from savings cannot use funds reserved for goals. Resetting the banking simulation clears allocations and keeps goal plans.
 
 The purchase comparison estimates two timelines using the goal's allocated amount and planned contribution. The first contribution lands 30 days after the estimate date in UTC, and each subsequent contribution lands 30 days later. The purchase can reduce the goal's allocation immediately or divert upcoming contributions until the purchase amount is covered. An already-funded goal stays complete when the purchase only diverts future contributions. A zero contribution leaves an unfinished goal without an estimated completion date. Comparing a purchase leaves all accounts and allocations intact.
 
@@ -107,7 +107,7 @@ On a build network with a private CA, pass a trusted CA bundle using `docker bui
 ## Demo walkthrough
 
 1. Register two members in separate browser profiles. On **Home**, load demo data and open the spending coach.
-2. In **Simulator**, create a CAD 2,000 goal with CAD 250 monthly contributions. Allocate the demo CAD 500 in savings and compare a CAD 200 purchase. The upcoming-contributions scenario estimates a 30-day delay.
+2. In **New Savings**, create a CAD 2,000 goal with CAD 250 monthly contributions. Allocate the demo CAD 500 in savings and compare a CAD 200 purchase. The upcoming-contributions scenario estimates a 30-day delay.
 3. In **MoneyLeaks**, show the monthly streaming price change, weekly membership, and matching café charges. From Home, audit a purchase and save a rating. Open the alternative ideas panel.
 4. In **Community**, publish an achievement. From the second profile, like it and leave a comment. Register a sample banknote and leave a hidden message, then look it up from the second profile.
 5. In **Explore**, filter simulated offers by city and category, then show the separate links to official grocery flyers.

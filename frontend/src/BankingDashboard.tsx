@@ -147,7 +147,7 @@ export function BankingDashboard({ username, token, onExpired }: {
 
           <section className="card bank-demo">
             <div><h2>Savings goals</h2><p>Allocate money from savings and see how a purchase could change your timeline.</p></div>
-            <Link to="/simulator">Open savings simulator <ArrowUpRight size={17} aria-hidden /></Link>
+            <Link to="/simulator">Open New Savings <ArrowUpRight size={17} aria-hidden /></Link>
           </section>
 
           <div className="bank-grid">
