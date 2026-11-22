@@ -47,9 +47,9 @@ export type History = { transactions: Entry[]; next_offset: number | null }
 const currency = new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD" })
 export const money = (minor: number) => currency.format(minor / 100)
 
-export function readAmount(value: string) {
+export function readAmount(value: string, allowZero = false) {
   const parts = /^(\d{1,7})(?:\.(\d{1,2}))?$/.exec(value.trim())
   if (!parts) return null
   const amount = Number(parts[1]) * 100 + Number((parts[2] ?? "").padEnd(2, "0"))
-  return amount > 0 && amount <= 100_000_000 ? amount : null
+  return amount >= (allowZero ? 0 : 1) && amount <= 100_000_000 ? amount : null
 }

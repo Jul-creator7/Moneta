@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from .banking_defaults import CURRENCY
 from .banking_schemas import CategoryTotal, Dashboard, History, Operation
-from .models import BankAccount, Transaction, User
+from .models import BankAccount, SavingsGoal, Transaction, User
 
 EXPENSE_TYPES = ("purchase", "bill")
 MAX_BALANCE_MINOR = 100_000_000_000
@@ -53,6 +53,12 @@ def post_entries(
         balance = account.balance_minor + delta
         if balance < 0:
             raise BankingConflict("Insufficient funds in this simulated account.")
+        if account.account_type == "savings" and delta < 0:
+            allocated = db.scalar(select(func.coalesce(func.sum(SavingsGoal.allocated_minor), 0)).where(
+                SavingsGoal.user_id == account.user_id,
+            ))
+            if balance < allocated:
+                raise BankingConflict("Release savings allocated to goals before using these funds.")
         if balance > MAX_BALANCE_MINOR:
             raise BankingConflict("This operation exceeds the simulated account limit.")
 
@@ -172,6 +178,7 @@ def load_demo(db: Session, user_id: int) -> None:
 def reset(db: Session, user_id: int) -> None:
     lock_user(db, user_id)
     db.execute(delete(Transaction).where(Transaction.user_id == user_id))
+    db.execute(update(SavingsGoal).where(SavingsGoal.user_id == user_id).values(allocated_minor=0))
     for account in accounts_for(db, user_id).values():
         account.balance_minor = 0
     db.commit()

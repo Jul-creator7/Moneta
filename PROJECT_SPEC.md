@@ -10,7 +10,7 @@ React, TypeScript, Vite, Tailwind CSS, shadcn/ui configuration, React Router, an
 
 Provide registration, login, current-user lookup, health monitoring, and a private workspace. Use Argon2 hashes, short-lived signed JWTs, unique emails and usernames, and server-side identity checks. The database contains users and a user-owned virtual bank account structure with integer minor-unit balances. Phase 1 provisions accounts at registration and migrates existing users.
 
-Home is private and displays simulated CAD balances, monthly cash flow, category spending, and account activity. The owner can record deposits, income, purchases, bills, and internal transfers. Demo activity is optional and reset requires explicit confirmation. Simulator, MoneyLeaks, Explore, and Community have navigable placeholders that explain planned capabilities. Financial data appears only when populated by working application features.
+Home is private and displays simulated CAD balances, monthly cash flow, category spending, and account activity. The owner can record deposits, income, purchases, bills, and internal transfers. Demo activity is optional and reset requires explicit confirmation. Simulator manages private savings goals and compares estimated purchase timelines. MoneyLeaks, Explore, and Community have navigable placeholders that explain planned capabilities. Financial data appears only when populated by working application features.
 
 ## Roadmap
 

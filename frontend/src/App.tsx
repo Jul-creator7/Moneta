@@ -6,17 +6,14 @@ import { Link, Navigate, NavLink, Outlet, Route, Routes, useLocation, useNavigat
 import { api, ApiError, type User } from "./api"
 import { useAuth } from "./auth"
 import { BankingDashboard } from "./BankingDashboard"
+import { SavingsSimulator } from "./SavingsSimulator"
 import { Button } from "./components/ui/button"
 
 const brand = "Tandem"
 
 const sections = [
   { name: "Home", path: "/", icon: House },
-  {
-    name: "Simulator", path: "/simulator", icon: Target,
-    description: "See how a purchase could change the timeline for a savings goal.",
-    features: ["Set a savings goal", "Compare purchase scenarios", "Track your progress"],
-  },
+  { name: "Simulator", path: "/simulator", icon: Target },
   {
     name: "MoneyLeaks", path: "/moneyleaks", icon: ScanSearch,
     description: "Review recurring expenses and find opportunities to keep more of your money.",
@@ -178,6 +175,12 @@ function Home() {
   return <BankingDashboard key={state.user.id} username={state.user.username} token={state.token} onExpired={signOut} />
 }
 
+function Simulator() {
+  const { state, signOut } = useAuth()
+  if (state.status !== "signed-in") return null
+  return <SavingsSimulator key={state.user.id} token={state.token} onExpired={signOut} />
+}
+
 function SectionPage({ section }: { section: (typeof sections)[number] }) {
   const Icon = section.icon
   return (
@@ -202,7 +205,8 @@ export function App() {
       <Route path="/register" element={<AuthPage key="register" registration />} />
       <Route element={<Layout />}>
         <Route index element={<Home />} />
-        {sections.slice(1).map((section) => (
+        <Route path="/simulator" element={<Simulator />} />
+        {sections.slice(2).map((section) => (
           <Route key={section.path} path={section.path} element={<SectionPage section={section} />} />
         ))}
       </Route>

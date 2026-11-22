@@ -53,3 +53,9 @@ Home contains personal chequing and savings accounts in simulated Canadian dolla
 Add simulated deposits, record income, pay bills, record purchases, and transfer funds between accounts. The monthly dashboard uses UTC calendar months. Income counts recorded income, spending counts purchases and bills, and the savings rate is (income minus spending) divided by income when income exists. Deposits and transfers are excluded from monthly income and spending.
 
 Load demo data into empty accounts from Home. Reset clears the signed-in user's simulated balances and transaction history after confirmation. Transaction amounts use integer cents. Internal transfers create matched debit and credit entries in a single database transaction.
+
+## Savings goals and purchase simulator
+
+In **Simulator**, create a goal with a target amount, an optional target date, and a planned contribution. Transfer simulated money into savings on **Home** and reserve it by setting the goal's total allocation. Lower the allocation to release it. Purchases, bills, and transfers from savings cannot use funds reserved for goals. Resetting the banking simulation clears allocations and keeps goal plans.
+
+The purchase comparison estimates two timelines using the goal's allocated amount and planned contribution. The first contribution lands 30 days after the estimate date in UTC, and each subsequent contribution lands 30 days later. The purchase can reduce the goal's allocation immediately or divert upcoming contributions until the purchase amount is covered. An already-funded goal stays complete when the purchase only diverts future contributions. A zero contribution leaves an unfinished goal without an estimated completion date. Comparing a purchase leaves all accounts and allocations intact.

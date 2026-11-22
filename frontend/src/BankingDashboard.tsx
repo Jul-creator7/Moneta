@@ -1,5 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState, type FormEvent } from "react"
 import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight, CircleDollarSign, Landmark, PiggyBank } from "lucide-react"
+import { Link } from "react-router-dom"
 import { api, ApiError } from "./api"
 import {
   expenseCategories, money, operations, readAmount,
@@ -139,6 +140,11 @@ export function BankingDashboard({ username, token, onExpired }: {
             <article className="card"><ArrowUpRight size={23} aria-hidden /><h2>Spending this month</h2><strong>{money(dashboard.monthly_spending_minor)}</strong></article>
           </section>
 
+          <section className="card bank-demo">
+            <div><h2>Savings goals</h2><p>Allocate money from savings and see how a purchase could change your timeline.</p></div>
+            <Link to="/simulator">Open savings simulator <ArrowUpRight size={17} aria-hidden /></Link>
+          </section>
+
           <div className="bank-grid">
             <OperationForm accounts={dashboard.accounts} disabled={disabled || confirmReset} onSubmit={submit} />
             <section className="card bank-chart" aria-labelledby="spending-title">
@@ -178,7 +184,7 @@ export function BankingDashboard({ username, token, onExpired }: {
             <div className="bank-actions">
               {confirmReset ? (
                 <>
-                  <span>Clear all your simulated balances and activity?</span>
+                  <span>Clear simulated balances, activity, and goal allocations?</span>
                   <Button className="bank-danger" disabled={disabled} onClick={() => void perform("/reset", "Simulation reset.")}>Confirm reset</Button>
                   <Button className="bank-secondary" disabled={pending} onClick={() => setConfirmReset(false)}>Cancel</Button>
                 </>

@@ -10,6 +10,7 @@ from sqlalchemy.orm import sessionmaker
 from .api import router
 from .banking_api import router as banking_router
 from .config import Settings
+from .goal_api import router as goal_router
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -36,7 +37,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
-        allow_methods=["GET", "POST"],
+        allow_methods=["GET", "POST", "PUT"],
         allow_headers=["Authorization", "Content-Type"],
     )
 
@@ -51,4 +52,5 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app.include_router(router, prefix="/api")
     app.include_router(banking_router, prefix="/api")
+    app.include_router(goal_router, prefix="/api")
     return app

@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import date, datetime
 
-from sqlalchemy import BigInteger, CheckConstraint, DateTime, ForeignKey, String, UniqueConstraint, func
+from sqlalchemy import BigInteger, CheckConstraint, Date, DateTime, ForeignKey, String, UniqueConstraint, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -52,3 +52,21 @@ class Transaction(Base):
     operation_id: Mapped[str] = mapped_column(String(36))
     transfer_group_id: Mapped[str | None] = mapped_column(String(36))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class SavingsGoal(Base):
+    __tablename__ = "savings_goals"
+    __table_args__ = (
+        CheckConstraint("target_minor > 0", name="ck_goal_positive_target"),
+        CheckConstraint("allocated_minor >= 0 AND allocated_minor <= target_minor", name="ck_goal_allocation"),
+        CheckConstraint("monthly_minor >= 0", name="ck_goal_monthly_nonnegative"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    name: Mapped[str] = mapped_column(String(80))
+    target_minor: Mapped[int] = mapped_column(BigInteger)
+    allocated_minor: Mapped[int] = mapped_column(BigInteger, server_default="0")
+    monthly_minor: Mapped[int] = mapped_column(BigInteger)
+    target_date: Mapped[date | None] = mapped_column(Date)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
