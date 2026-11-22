@@ -21,5 +21,5 @@ export async function api<T>(path: string, options: RequestInit = {}, token?: st
       : detail
     throw new ApiError(response.status, message || "The request failed. Please try again.")
   }
-  return response.json()
+  return response.status === 204 ? (undefined as T) : response.json()
 }

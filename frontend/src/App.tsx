@@ -1,10 +1,11 @@
 import { useState, type FormEvent } from "react"
 import {
-  ArrowRight, ArrowUpRight, Compass, House, LogOut, ScanSearch, Sprout, Target, Users, Wallet,
+  ArrowRight, Compass, House, LogOut, ScanSearch, Sprout, Target, Users,
 } from "lucide-react"
 import { Link, Navigate, NavLink, Outlet, Route, Routes, useLocation, useNavigate } from "react-router-dom"
 import { api, ApiError, type User } from "./api"
 import { useAuth } from "./auth"
+import { BankingDashboard } from "./BankingDashboard"
 import { Button } from "./components/ui/button"
 
 const brand = "Tandem"
@@ -172,31 +173,9 @@ function Layout() {
 }
 
 function Home() {
-  const { state } = useAuth()
+  const { state, signOut } = useAuth()
   if (state.status !== "signed-in") return null
-
-  return (
-    <>
-      <section className="hero">
-        <div className="section-icon"><Sprout size={25} aria-hidden /></div>
-        <h1>Welcome, {state.user.username}.</h1>
-        <p>Your private space for tracking spending and growing savings.</p>
-      </section>
-      <section className="dashboard-grid" aria-label="Financial overview">
-        <article className="card">
-          <Wallet size={23} aria-hidden />
-          <h2>Virtual banking</h2>
-          <p>Balances and recent activity will appear here once virtual banking is available.</p>
-        </article>
-        <article className="card">
-          <Target size={23} aria-hidden />
-          <h2>Savings goals</h2>
-          <p>See what’s planned for setting goals and estimating purchase impact.</p>
-          <Link to="/simulator">Open Simulator <ArrowUpRight size={17} aria-hidden /></Link>
-        </article>
-      </section>
-    </>
-  )
+  return <BankingDashboard key={state.user.id} username={state.user.username} token={state.token} onExpired={signOut} />
 }
 
 function SectionPage({ section }: { section: (typeof sections)[number] }) {

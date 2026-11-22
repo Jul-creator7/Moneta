@@ -45,3 +45,11 @@ npm run build
 Registration creates a private user profile. Sign in with the email and password used during registration. Passwords are hashed with Argon2. The browser stores a 30-minute bearer token in local storage for refresh persistence. Scripts running on the same origin can read that token. Logout clears local storage and the browser's session state. An issued token remains valid until expiration. Before a public deployment, revisit session storage, revocation, login throttling, and HTTPS.
 
 SQLite is the local default. Set `DATABASE_URL` to use a different database and install its SQLAlchemy driver. Test the migrations on that database before deployment.
+
+## Virtual banking
+
+Home contains personal chequing and savings accounts in simulated Canadian dollars. Migrations provision both accounts for existing users, and registration provisions them for new users. Run `alembic upgrade head` with the API stopped when updating a Phase 0 installation.
+
+Add simulated deposits, record income, pay bills, record purchases, and transfer funds between accounts. The monthly dashboard uses UTC calendar months. Income counts recorded income, spending counts purchases and bills, and the savings rate is (income minus spending) divided by income when income exists. Deposits and transfers are excluded from monthly income and spending.
+
+Load demo data into empty accounts from Home. Reset clears the signed-in user's simulated balances and transaction history after confirmation. Transaction amounts use integer cents. Internal transfers create matched debit and credit entries in a single database transaction.

@@ -8,6 +8,7 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 
 from .api import router
+from .banking_api import router as banking_router
 from .config import Settings
 
 
@@ -49,4 +50,5 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return JSONResponse(status_code=422, content={"detail": fields})
 
     app.include_router(router, prefix="/api")
+    app.include_router(banking_router, prefix="/api")
     return app

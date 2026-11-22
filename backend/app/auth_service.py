@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from .banking_defaults import provision_accounts
 from .models import User
 from .schemas import Credentials, Registration
 
@@ -26,6 +27,8 @@ def register(db: Session, data: Registration) -> User:
     )
     db.add(user)
     try:
+        db.flush()
+        provision_accounts(db, user.id)
         db.commit()
     except IntegrityError as error:
         db.rollback()

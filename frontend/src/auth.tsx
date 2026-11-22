@@ -4,7 +4,7 @@ import { api, ApiError, type Credentials, type User } from "./api"
 const tokenKey = "tandem.access_token"
 type AuthState =
   | { status: "loading" | "signed-out" | "unavailable" }
-  | { status: "signed-in"; user: User }
+  | { status: "signed-in"; user: User; token: string }
 
 const AuthContext = createContext<{
   state: AuthState
@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const controller = new AbortController()
     api<User>("/users/me", { signal: controller.signal }, token)
       .then((user) => {
-        if (!controller.signal.aborted) setState({ status: "signed-in", user })
+        if (!controller.signal.aborted) setState({ status: "signed-in", user, token })
       })
       .catch((error: unknown) => {
         if (controller.signal.aborted) return
@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
     const user = await api<User>("/users/me", {}, access_token)
     localStorage.setItem(tokenKey, access_token)
-    setState({ status: "signed-in", user })
+    setState({ status: "signed-in", user, token: access_token })
   }
 
   function retry() {
