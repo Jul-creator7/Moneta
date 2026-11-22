@@ -233,3 +233,10 @@ button, summary { cursor: pointer; }
 @media (max-width: 520px) {
   .deal-grid { grid-template-columns: 1fr; }
 }
+
+.coach-reply { padding: .85rem; border-radius: .75rem; background: #edf2e9; }
+.coach-reply > strong { font-size: .88rem; }
+.flyer-list { display: grid; gap: .55rem; }
+.flyer-list li { padding-top: .55rem; border-top: 1px solid var(--border); }
+.skip-link { position: fixed; top: .75rem; left: .75rem; z-index: 5; padding: .7rem 1rem; border-radius: .65rem; color: white; background: #1b4837; transform: translateY(-160%); }
+.skip-link:focus { transform: translateY(0); }

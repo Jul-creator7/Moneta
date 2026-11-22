@@ -22,3 +22,7 @@ Home is private and displays simulated CAD balances, monthly cash flow, category
 6. End-to-end testing and deployment.
 
 Optional AI explanations use minimal structured data server-side and supplement deterministic calculations. Deal and map integrations can be added behind backend services as their phases require.
+
+## Phase 6
+
+The optional financial coach uses limited aggregate or categorical context and falls back to local suggestions. Financial calculations remain deterministic. Explore links to official retailer flyers separately from the simulated deal catalog. A single-origin container serves the SPA and API, applies migrations at startup, and supports a persistent SQLite volume for the demo.

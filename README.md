@@ -79,3 +79,35 @@ Profiles and posts are visible to signed-in community members. Profiles display 
 Open **Community → Banknote stories** and enter the note’s currency code, denomination, serial number, and series if known. Register a note if it is new, then add a city and a story. Other signed-in members who enter matching note details can see its timeline and reveal hidden messages. The reports do not verify where a note has been or who holds it. Enter a city and avoid personal details or precise addresses.
 
 **Explore** shows database-seeded, simulated food and clothing offers in Montréal, Laval, and Toronto. Browse by city and category without sharing location. **Use my location** optionally filters and orders examples within 20 km. Coordinates stay in the browser for that page session, and browser geolocation requires localhost or HTTPS. The sample prices cannot be redeemed.
+
+## Optional financial coach
+
+The app works without a provider key. To enable OpenAI locally, add `OPENAI_API_KEY` to `backend/.env` and restart the API. `OPENAI_MODEL` defaults to `gpt-4.1-mini`. For a deployed service, set the key in the host's secret settings. Keep `.env` and provider keys outside Git.
+
+Request tips from Home, MoneyLeaks, or a saved purchase audit. Each action sends a limited context for that topic to the OpenAI Responses API when configured. Spending and MoneyLeaks use aggregates. Purchase alternatives use the category and optional necessity rating. Free-text reflections, merchant names, emails, credentials, and authentication tokens stay in Moneta. The coach uses local tips when the provider is disabled, unavailable, or the process request budget is exhausted. Calculations and displayed financial metrics come from the application.
+
+Explore includes experimental links to official grocery flyers for the demo cities. Select a store on the retailer's site to see current offers. Moneta does not copy retailer prices into the simulated catalog.
+
+## Container deployment
+
+The Docker image builds the frontend and serves it alongside FastAPI from one origin. The container runs migrations on startup and keeps the default SQLite database under `/data`. Use a single app instance with a persistent volume writable by UID `10001`. Set a stable `JWT_SECRET` of 32 or more characters in your hosting secret settings, optionally set the coach key, and use the host's HTTPS endpoint. Set the health check to `/api/health`. The container honors `PORT` and defaults to `8000`.
+
+To test locally with Docker Desktop, run this from the repository root in PowerShell:
+
+```powershell
+docker build -t moneta .
+$env:JWT_SECRET = python -c "import secrets; print(secrets.token_hex(32))"
+docker run --rm --name moneta -p 127.0.0.1:8000:8000 -v moneta-data:/data --env JWT_SECRET --env OPENAI_API_KEY moneta
+```
+
+Open http://localhost:8000. Stop a separate development API on port 8000 before starting the container or map it to a different host port. Keep the same secret across runs if you want existing sessions to remain valid.
+
+On a build network with a private CA, pass a trusted CA bundle using `docker build --secret id=build_ca,src=/path/to/ca-bundle.pem -t moneta .`. This keeps the bundle out of the resulting image.
+
+## Demo walkthrough
+
+1. Register two members in separate browser profiles. On **Home**, load demo data and open the spending coach.
+2. In **Simulator**, create a CAD 2,000 goal with CAD 250 monthly contributions. Allocate the demo CAD 500 in savings and compare a CAD 200 purchase. The upcoming-contributions scenario estimates a 30-day delay.
+3. In **MoneyLeaks**, show the monthly streaming price change, weekly membership, and matching café charges. From Home, audit a purchase and save a rating. Open the alternative ideas panel.
+4. In **Community**, publish an achievement. From the second profile, like it and leave a comment. Register a sample banknote and leave a hidden message, then look it up from the second profile.
+5. In **Explore**, filter simulated offers by city and category, then show the separate links to official grocery flyers.

@@ -9,11 +9,14 @@ from sqlalchemy.orm import sessionmaker
 
 from .api import router
 from .banking_api import router as banking_router
+from .coach_api import router as coach_router
+from .coach_service import CoachBudget
 from .community_api import router as community_router
 from .config import Settings
 from .explore_api import router as explore_router
 from .goal_api import router as goal_router
 from .intelligence_api import router as intelligence_router
+from .web import WebApp
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -36,6 +39,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app = FastAPI(title="Tandem API", lifespan=lifespan)
     app.state.settings = settings
+    app.state.coach_budget = CoachBudget()
     app.state.sessions = sessionmaker(engine)
     app.add_middleware(
         CORSMiddleware,
@@ -60,4 +64,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(intelligence_router, prefix="/api")
     app.include_router(community_router, prefix="/api")
     app.include_router(explore_router, prefix="/api")
+    app.include_router(coach_router, prefix="/api")
+    if settings.frontend_dist is not None:
+        if not (settings.frontend_dist / "index.html").is_file():
+            raise RuntimeError("FRONTEND_DIST must point to a built frontend containing index.html.")
+        app.mount("/", WebApp(directory=settings.frontend_dist, html=True), name="web")
     return app

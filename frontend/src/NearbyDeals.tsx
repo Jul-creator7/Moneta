@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import { Compass, LocateFixed, MapPin } from "lucide-react"
+import { ArrowUpRight, Compass, LocateFixed, MapPin } from "lucide-react"
 import { requestError, useAuthenticatedApi } from "./authenticatedApi"
 import { financialDate } from "./intelligence"
 import { Button } from "./components/ui/button"
@@ -10,6 +10,11 @@ type Deal = Coordinates & {
   original_minor: number; sale_minor: number; expires_on: string | null
 }
 
+const groceryFlyers = [
+  { name: "Metro", url: "https://www.metro.ca/en/flyer", cities: ["Montréal", "Laval", "Toronto"] },
+  { name: "Super C", url: "https://www.superc.ca/en/flyer", cities: ["Montréal", "Laval"] },
+  { name: "Food Basics", url: "https://www.foodbasics.ca/flyer", cities: ["Toronto"] },
+]
 const NEARBY_KM = 20
 const radians = (degrees: number) => degrees * Math.PI / 180
 
@@ -133,6 +138,19 @@ export function NearbyDeals({ token, onExpired }: { token: string; onExpired: ()
               {visible.map(({ deal, km }) => <DealCard deal={deal} km={km} key={deal.id} />)}
             </div>
           )}
+        </section>
+
+        <section className="card">
+          <h2>Official grocery flyers</h2>
+          <p>Try these experimental source links to discover current offers. Select your store on the retailer’s site to check prices and availability.</p>
+          <ul className="flyer-list">
+            {groceryFlyers.filter((flyer) => !city || flyer.cities.includes(city)).map((flyer) => (
+              <li key={flyer.name}>
+                <a href={flyer.url} target="_blank" rel="noreferrer">{flyer.name} flyer <ArrowUpRight size={17} aria-hidden /><span className="sr-only"> (opens in a new tab)</span></a>
+                <p>{flyer.cities.join(", ")}</p>
+              </li>
+            ))}
+          </ul>
         </section>
       </>}
     </div>

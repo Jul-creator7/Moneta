@@ -3,6 +3,7 @@ import { ArrowUpRight, CalendarClock, Copy, ScanSearch } from "lucide-react"
 import { Link } from "react-router-dom"
 import { requestError, useAuthenticatedApi } from "./authenticatedApi"
 import { money } from "./banking"
+import { CoachPanel } from "./CoachPanel"
 import { Button } from "./components/ui/button"
 import { financialDate, type AuditHistory, type Report } from "./intelligence"
 
@@ -108,6 +109,9 @@ export function MoneyLeaks({ token, onExpired }: { token: string; onExpired: () 
             )}
           </section>
         </div>
+
+        <CoachPanel token={token} onExpired={onExpired} topic="recurring" title="Review recurring spending" label="Get review tips"
+          contextKey={JSON.stringify([report.potential_annual_savings_minor, report.potential_annual_increase_minor, report.duplicates.length])} />
 
         <section className="card">
           <div className="intelligence-row">

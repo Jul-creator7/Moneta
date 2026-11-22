@@ -134,6 +134,7 @@ function Layout() {
 
   return (
     <div className="app-shell">
+      <a className="skip-link" href="#main-content">Skip to main content</a>
       <aside className="sidebar">
         <Link to="/" aria-label="Tandem home"><Brand /></Link>
         <nav aria-label="Main navigation">
@@ -160,7 +161,7 @@ function Layout() {
             </div>
           </details>
         </header>
-        <main className="content"><Outlet /></main>
+        <main className="content" id="main-content" tabIndex={-1}><Outlet /></main>
       </div>
     </div>
   )

@@ -3,6 +3,7 @@ import { ArrowLeft, ClipboardCheck, Target } from "lucide-react"
 import { Link } from "react-router-dom"
 import { requestError, useAuthenticatedApi } from "./authenticatedApi"
 import { money } from "./banking"
+import { CoachPanel } from "./CoachPanel"
 import { Button } from "./components/ui/button"
 import {
   financialDate, type AuditedPurchase, type AuditProjection, type GoalOption,
@@ -160,6 +161,8 @@ export function PurchaseAudit({ token, onExpired, transactionId }: {
           </div>}
         </section>
       </div>}
+      {detail?.audit && <CoachPanel token={token} onExpired={onExpired} topic={`purchases/${transactionId}`}
+        title="Explore more alternatives" label="Get alternative ideas" contextKey={String(detail.audit.necessity_rating)} />}
     </div>
   )
 }

@@ -6,6 +6,7 @@ import {
   expenseCategories, money, operations, readAmount,
   type Account, type Dashboard, type Entry, type History, type OperationType,
 } from "./banking"
+import { CoachPanel } from "./CoachPanel"
 import { Button } from "./components/ui/button"
 
 const SpendingChart = lazy(() => import("./SpendingChart"))
@@ -174,6 +175,9 @@ export function BankingDashboard({ username, token, onExpired }: {
             {auditId && <Link to={`/moneyleaks/audit/${auditId}`}>Audit this purchase</Link>}
           </div>}
           {actionError && <p role="alert" className="bank-feedback bank-error">{actionError}</p>}
+
+          <CoachPanel token={token} onExpired={onExpired} topic="spending" title="Financial coach" label="Get spending tips"
+            contextKey={JSON.stringify([dashboard.monthly_income_minor, dashboard.monthly_spending_minor, dashboard.spending_by_category])} />
 
           <section className="card bank-history" aria-labelledby="history-title">
             <h2 id="history-title">{history ? "Transaction history" : "Recent transactions"}</h2>
