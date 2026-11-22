@@ -2,7 +2,9 @@ from datetime import date
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, StringConstraints
+from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, StringConstraints, model_validator
+
+from .post_images import PostImage
 
 from .community_schemas import CommunityTime
 
@@ -31,8 +33,15 @@ class BanknoteIdentity(BaseModel):
 class EventInput(BaseModel):
     request_id: UUID
     city: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=80)]
-    message: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=1000)]
+    message: Annotated[str, StringConstraints(strip_whitespace=True, max_length=1000)] = ""
+    image: PostImage | None = None
     is_hidden: bool = Field(strict=True)
+
+    @model_validator(mode="after")
+    def require_content(self):
+        if not self.message and not self.image:
+            raise ValueError("Add text or an image.")
+        return self
 
 
 class EventRequest(BaseModel):
@@ -46,6 +55,7 @@ class BanknoteEventView(BaseModel):
     id: int
     city: str
     message: str
+    image: str | None
     is_hidden: bool
     created_at: CommunityTime
 

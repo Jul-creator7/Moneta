@@ -50,7 +50,7 @@ def post_rows(viewer_id: int):
 
 def post_view(post: Post, user: User, likes: int, comments: int, liked: bool) -> PostView:
     return PostView(
-        id=post.id, author=profile(user), post_type=post.post_type, content=post.content, created_at=post.created_at,
+        id=post.id, author=profile(user), post_type=post.post_type, content=post.content, image=post.image, created_at=post.created_at,
         like_count=likes, comment_count=comments, liked=liked,
     )
 
@@ -71,10 +71,10 @@ def create_post(db: Session, user_id: int, data: PostInput) -> PostView:
     request_id = str(data.request_id)
     post = db.scalar(select(Post).where(Post.author_id == user_id, Post.request_id == request_id))
     if post is None:
-        post = Post(author_id=user_id, request_id=request_id, post_type=data.post_type, content=data.content)
+        post = Post(author_id=user_id, request_id=request_id, post_type=data.post_type, content=data.content, image=data.image)
         db.add(post)
         db.flush()
-    elif post.content != data.content or post.post_type != data.post_type:
+    elif (post.content, post.post_type, post.image) != (data.content, data.post_type, data.image):
         raise RequestConflict("This request ID was already used for another post.")
     result = post_view(*db.execute(post_rows(user_id).where(Post.id == post.id)).one())
     db.commit()

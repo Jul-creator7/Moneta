@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react"
 import { ArrowLeftRight, CalendarDays, PiggyBank, Target } from "lucide-react"
 import { api, ApiError } from "./api"
@@ -181,7 +182,10 @@ export function SavingsSimulator({ token, onExpired }: { token: string; onExpire
               <section className="card">
                 <div className="goal-heading">
                   <div><h2>{goal.name}</h2><p>{goal.target_date ? `Target date ${showDate(goal.target_date)}` : "No target date set"}</p></div>
-                  <Button className="bank-secondary" disabled={disabled} onClick={() => setEdit(!edit)}>{edit ? "Cancel edit" : "Edit plan"}</Button>
+                  <div className="bank-actions">
+                    <Button className="bank-secondary" disabled={disabled} onClick={() => setEdit(!edit)}>{edit ? "Cancel edit" : "Edit plan"}</Button>
+                    <Link to="/community" state={{ goalDraft: `I’ve reached ${Math.floor(goal.allocated_minor * 100 / goal.target_minor)}% of my savings goal: ${goal.name}!` }}>Share goal</Link>
+                  </div>
                 </div>
                 <div className="goal-progress">
                   <label htmlFor="goal-progress">Allocated progress</label>

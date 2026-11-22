@@ -4,10 +4,11 @@ import { Link } from "react-router-dom"
 import { ApiError } from "./api"
 import { requestError, useAuthenticatedApi } from "./authenticatedApi"
 import { communityDate, submission } from "./communityUtils"
+import { imageTypes, readPostImage } from "./postImage"
 import { Button } from "./components/ui/button"
 
 type Identity = { currency: string; denomination: number; serial_number: string; series: string }
-type StoryEvent = { id: number; city: string; message: string; is_hidden: boolean; created_at: string }
+type StoryEvent = { id: number; city: string; message: string; image: string | null; is_hidden: boolean; created_at: string }
 type Story = { note: Identity; events: StoryEvent[]; before_id: number | null }
 
 export function BanknoteStories({ token, onExpired }: { token: string; onExpired: () => void }) {
@@ -26,7 +27,7 @@ export function BanknoteStories({ token, onExpired }: { token: string; onExpired
     try {
       await task()
     } catch (failure) {
-      setError(requestError(failure))
+      setError(failure instanceof Error ? failure.message : requestError(failure))
     } finally {
       setPending(false)
     }
@@ -78,12 +79,17 @@ export function BanknoteStories({ token, onExpired }: { token: string; onExpired
     if (!story) return
     const form = event.currentTarget
     const fields = new FormData(form)
-    const values = {
-      city: String(fields.get("city")).trim(),
-      message: String(fields.get("message")).trim(),
-      is_hidden: fields.has("hidden"),
-    }
     await run(async () => {
+      const values = {
+        city: String(fields.get("city")).trim(),
+        message: String(fields.get("message")).trim(),
+        is_hidden: fields.has("hidden"),
+        image: await readPostImage(fields.get("image")),
+      }
+      if (!values.message && !values.image) {
+        setError("Add text or an image to the story.")
+        return
+      }
       const key = submission(attempt.current, JSON.stringify([story.note, values]))
       attempt.current = key
       const created = await call<StoryEvent>("/banknotes/events", {
@@ -154,7 +160,8 @@ export function BanknoteStories({ token, onExpired }: { token: string; onExpired
                     <time dateTime={item.created_at}>{communityDate(item.created_at)}</time>
                   </div>
                   {item.is_hidden && <span className="note-revealed"><LockKeyhole size={15} aria-hidden /> Hidden message revealed</span>}
-                  <p className="community-copy">{item.message}</p>
+                  {item.message && <p className="community-copy">{item.message}</p>}
+                  {item.image && <img className="post-attachment" src={item.image} alt="Image shared with this banknote story" loading="lazy" />}
                 </li>
               ))}
             </ol>
@@ -167,7 +174,8 @@ export function BanknoteStories({ token, onExpired }: { token: string; onExpired
           <form className="bank-form" onSubmit={(event) => void contribute(event)}>
             <fieldset disabled={pending}>
               <label>City<input name="city" maxLength={80} required /></label>
-              <label>Your message<textarea name="message" rows={4} maxLength={1000} required /></label>
+              <label>Your message<textarea name="message" rows={4} maxLength={1000} /></label>
+              <label>Attach an image<input type="file" name="image" accept={imageTypes} /></label>
               <label className="note-checkbox"><input name="hidden" type="checkbox" /> Mark as a hidden message</label>
               <Button type="submit">Add story</Button>
             </fieldset>

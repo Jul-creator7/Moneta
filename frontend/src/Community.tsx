@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react"
 import { ArrowLeft, ArrowUpRight, Banknote, Heart, MessageCircle, RefreshCw, Trophy, Users } from "lucide-react"
-import { Link } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { requestError, useAuthenticatedApi } from "./authenticatedApi"
+import { imageTypes, readPostImage } from "./postImage"
 import { Button } from "./components/ui/button"
 import {
   communityDate, profilePath, submission, type Comment, type LikeState, type Page, type Post, type PostType, type Profile,
@@ -16,6 +17,9 @@ export function Community({ token, onExpired, viewer, username }: {
   username?: string
 }) {
   const call = useAuthenticatedApi(token, onExpired)
+  const location = useLocation()
+  const navigate = useNavigate()
+  const draft = typeof location.state?.goalDraft === "string" ? location.state.goalDraft : ""
   const [profile, setProfile] = useState<Profile>()
   const [feed, setFeed] = useState<Page<Post>>()
   const [pending, setPending] = useState(true)
@@ -110,7 +114,8 @@ export function Community({ token, onExpired, viewer, username }: {
         <Link to="/community/banknotes">Open banknote stories <Banknote size={17} aria-hidden /></Link>
       </section>}
 
-      {!username && feed && <PostComposer call={call} disabled={pending} onAdded={(post) => {
+      {!username && feed && <PostComposer call={call} draft={draft} disabled={pending} onAdded={(post) => {
+        if (draft) navigate("/community", { replace: true, state: null })
         setFeed((previous) => previous && {
           ...previous, items: [post, ...previous.items.filter((entry) => entry.id !== post.id)],
         })
@@ -164,7 +169,12 @@ function ProfileForm({ profile, call, onSaved }: { profile: Profile; call: Commu
   )
 }
 
-function PostComposer({ call, disabled, onAdded }: { call: CommunityCall; disabled: boolean; onAdded: (post: Post) => void }) {
+function PostComposer({ call, draft, disabled, onAdded }: {
+  call: CommunityCall; draft: string; disabled: boolean; onAdded: (post: Post) => void
+}) {
+  const [content, setContent] = useState(draft)
+  const [type, setType] = useState<PostType>(draft ? "achievement" : "discussion")
+  const publishing = useRef(false)
   const [pending, setPending] = useState(false)
   const [error, setError] = useState("")
   const [notice, setNotice] = useState("")
@@ -174,28 +184,33 @@ function PostComposer({ call, disabled, onAdded }: { call: CommunityCall; disabl
     event.preventDefault()
     const form = event.currentTarget
     const fields = new FormData(form)
-    const content = String(fields.get("post")).trim()
-    const type = fields.get("type") as PostType
+    if (publishing.current) return
+    publishing.current = true
     setNotice("")
-    if (!content) {
-      setError("Write something before publishing.")
-      return
-    }
     setPending(true)
     setError("")
-    const request = submission(attempt.current, JSON.stringify([type, content]))
-    attempt.current = request
     try {
+      const text = content.trim()
+      const image = await readPostImage(fields.get("image"))
+      if (!text && !image) {
+        setError("Add text or an image before publishing.")
+        return
+      }
+      const request = submission(attempt.current, JSON.stringify([type, text, image]))
+      attempt.current = request
       const post = await call<Post>("/community/posts", {
-        method: "POST", body: JSON.stringify({ request_id: request.id, post_type: type, content }),
+        method: "POST", body: JSON.stringify({ request_id: request.id, post_type: type, content: text, image }),
       })
       attempt.current = undefined
+      setContent("")
+      setType("discussion")
       onAdded(post)
       form.reset()
       setNotice("Post published.")
     } catch (failure) {
-      setError(requestError(failure))
+      setError(failure instanceof Error ? failure.message : requestError(failure))
     } finally {
+      publishing.current = false
       setPending(false)
     }
   }
@@ -206,12 +221,13 @@ function PostComposer({ call, disabled, onAdded }: { call: CommunityCall; disabl
       <form className="bank-form" onSubmit={(event) => void publish(event)}>
         <fieldset disabled={pending || disabled}>
           <label><span id="community-post-type">Post type</span>
-            <select aria-labelledby="community-post-type" name="type">
+            <select aria-labelledby="community-post-type" value={type} onChange={(event) => setType(event.target.value as PostType)}>
               <option value="discussion">Discussion</option>
               <option value="achievement">Savings achievement</option>
             </select>
           </label>
-          <label>Your post<textarea name="post" maxLength={1500} rows={3} required /></label>
+          <label>Your post<textarea name="post" maxLength={1500} rows={3} autoFocus={Boolean(draft)} value={content} onChange={(event) => setContent(event.target.value)} /></label>
+          <label>Attach an image<input type="file" name="image" accept={imageTypes} /></label>
           <p>Members can read what you publish. Share only the details you want others to see.</p>
           <Button type="submit">{pending ? "Publishing…" : "Publish post"}</Button>
         </fieldset>
@@ -256,7 +272,8 @@ function PostCard({ post, call, onUpdate, disabled }: {
         </div>
         {post.post_type === "achievement" && <span className="community-achievement"><Trophy size={15} aria-hidden /> Savings achievement</span>}
       </div>
-      <p className="community-copy">{post.content}</p>
+      {post.content && <p className="community-copy">{post.content}</p>}
+      {post.image && <img className="post-attachment" src={post.image} alt="Image shared with this post" loading="lazy" />}
       <div className="community-controls">
         <Button className="bank-secondary" aria-pressed={post.liked} disabled={likePending || disabled} onClick={() => void like()}>
           <Heart size={17} fill={post.liked ? "currentColor" : "none"} aria-hidden /> Likes ({post.like_count})

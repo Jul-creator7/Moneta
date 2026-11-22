@@ -6,6 +6,7 @@ export type Post = LikeState & {
   author: Profile
   post_type: PostType
   content: string
+  image: string | null
   created_at: string
   comment_count: number
 }

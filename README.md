@@ -111,3 +111,5 @@ On a build network with a private CA, pass a trusted CA bundle using `docker bui
 3. In **MoneyLeaks**, show the monthly streaming price change, weekly membership, and matching café charges. From Home, audit a purchase and save a rating. Open the alternative ideas panel.
 4. In **Community**, publish an achievement. From the second profile, like it and leave a comment. Register a sample banknote and leave a hidden message, then look it up from the second profile.
 5. In **Explore**, filter simulated offers by city and category, then show the separate links to official grocery flyers.
+
+In **New Savings**, choose **Share goal** to open an editable savings achievement draft with the goal name and progress percentage. Review the draft before publishing. Discussion posts, savings achievements, and banknote stories (including hidden messages) accept one JPEG, PNG, or WebP image with or without text. Images are resized for sharing and metadata is stripped. Hidden images appear when members look up the matching banknote.

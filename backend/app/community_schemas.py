@@ -2,7 +2,9 @@ from datetime import datetime, timezone
 from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import AfterValidator, BaseModel, Field, StringConstraints
+from pydantic import AfterValidator, BaseModel, Field, StringConstraints, model_validator
+
+from .post_images import PostImage
 
 PostType = Literal["discussion", "achievement"]
 Name = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=80)]
@@ -27,7 +29,14 @@ class ProfileInput(BaseModel):
 class PostInput(BaseModel):
     request_id: UUID
     post_type: PostType
-    content: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=1500)]
+    content: Annotated[str, StringConstraints(strip_whitespace=True, max_length=1500)] = ""
+    image: PostImage | None = None
+
+    @model_validator(mode="after")
+    def require_content(self):
+        if not self.content and not self.image:
+            raise ValueError("Add text or an image.")
+        return self
 
 
 class CommentInput(BaseModel):
@@ -48,6 +57,7 @@ class PostView(LikeState):
     author: PublicProfile
     post_type: PostType
     content: str
+    image: str | None
     created_at: CommunityTime
     comment_count: int
 

@@ -240,3 +240,6 @@ button, summary { cursor: pointer; }
 .flyer-list li { padding-top: .55rem; border-top: 1px solid var(--border); }
 .skip-link { position: fixed; top: .75rem; left: .75rem; z-index: 5; padding: .7rem 1rem; border-radius: .65rem; color: white; background: #1b4837; transform: translateY(-160%); }
 .skip-link:focus { transform: translateY(0); }
+
+.post-attachment { display: block; width: auto; max-width: 100%; max-height: 32rem; object-fit: contain; border-radius: .65rem; }
+.note-timeline .post-attachment { margin-top: .5rem; }

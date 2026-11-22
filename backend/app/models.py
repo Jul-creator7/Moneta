@@ -99,6 +99,7 @@ class Post(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     content: Mapped[str] = mapped_column(Text)
+    image: Mapped[str | None] = mapped_column(Text)
     post_type: Mapped[str] = mapped_column(String(20))
     request_id: Mapped[str] = mapped_column(String(36))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -147,6 +148,7 @@ class BanknoteEvent(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     city: Mapped[str] = mapped_column(String(80))
     message: Mapped[str] = mapped_column(Text)
+    image: Mapped[str | None] = mapped_column(Text)
     is_hidden: Mapped[bool]
     request_id: Mapped[str] = mapped_column(String(36))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

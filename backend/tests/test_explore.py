@@ -47,7 +47,7 @@ def test_lookup_uses_complete_identity_and_hidden_story_reaches_next_member(clie
     events = result.json()["events"]
     assert [(event["city"], event["is_hidden"]) for event in events] == [("Laval", True), ("Montréal", False)]
     assert events[0]["message"] == "Good luck, next holder!"
-    assert set(events[0]) == {"id", "city", "message", "is_hidden", "created_at"}
+    assert set(events[0]) == {"id", "city", "message", "is_hidden", "created_at", "image"}
     assert "Good luck, next holder!" not in client.get("/api/community/posts", headers=next_holder).text
 
 
