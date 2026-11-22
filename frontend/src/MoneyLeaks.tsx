@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from "react"
 import { ArrowUpRight, CalendarClock, Copy, ScanSearch } from "lucide-react"
 import { Link } from "react-router-dom"
+import { requestError, useAuthenticatedApi } from "./authenticatedApi"
 import { money } from "./banking"
 import { Button } from "./components/ui/button"
-import { financialDate, requestError, useIntelligenceApi, type AuditHistory, type Report } from "./intelligence"
+import { financialDate, type AuditHistory, type Report } from "./intelligence"
 
 export function MoneyLeaks({ token, onExpired }: { token: string; onExpired: () => void }) {
-  const call = useIntelligenceApi(token, onExpired)
+  const call = useAuthenticatedApi(token, onExpired)
   const [report, setReport] = useState<Report>()
   const [history, setHistory] = useState<AuditHistory>()
   const [error, setError] = useState("")

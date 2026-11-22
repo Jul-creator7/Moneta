@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react"
 import { ArrowLeft, ClipboardCheck, Target } from "lucide-react"
 import { Link } from "react-router-dom"
+import { requestError, useAuthenticatedApi } from "./authenticatedApi"
 import { money } from "./banking"
 import { Button } from "./components/ui/button"
 import {
-  financialDate, requestError, useIntelligenceApi, type AuditedPurchase, type AuditProjection, type GoalOption,
+  financialDate, type AuditedPurchase, type AuditProjection, type GoalOption,
 } from "./intelligence"
 
 export function PurchaseAudit({ token, onExpired, transactionId }: {
   token: string; onExpired: () => void; transactionId: string
 }) {
-  const call = useIntelligenceApi(token, onExpired)
+  const call = useAuthenticatedApi(token, onExpired)
   const [detail, setDetail] = useState<AuditedPurchase>()
   const [goals, setGoals] = useState<GoalOption[]>([])
   const [goalId, setGoalId] = useState("")

@@ -5,6 +5,7 @@ import {
 import { Link, Navigate, NavLink, Outlet, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom"
 import { api, ApiError, type User } from "./api"
 import { useAuth } from "./auth"
+import { Community } from "./Community"
 import { BankingDashboard } from "./BankingDashboard"
 import { MoneyLeaks } from "./MoneyLeaks"
 import { PurchaseAudit } from "./PurchaseAudit"
@@ -22,11 +23,7 @@ const sections = [
     description: "Find local deals that fit what you already planned to buy.",
     features: ["Discover nearby offers", "Browse food and clothing deals"],
   },
-  {
-    name: "Community", path: "/community", icon: Users,
-    description: "Share savings milestones and learn from the habits that work for others.",
-    features: ["Share an achievement", "Follow banknote stories"],
-  },
+  { name: "Community", path: "/community", icon: Users },
 ]
 
 function Brand() {
@@ -56,6 +53,7 @@ function AuthPage({ registration = false }: { registration?: boolean }) {
   const returnTo = location.state?.from
   const destination = typeof returnTo === "string" && (
     sections.some(({ path }) => path === returnTo) || /^\/moneyleaks\/audit\/[1-9]\d*$/.test(returnTo)
+    || /^\/community\/profiles\/[a-zA-Z0-9_]{3,32}$/.test(returnTo)
   ) ? returnTo : "/"
 
   if (state.status === "signed-in") return <Navigate to={destination} replace />
@@ -141,7 +139,7 @@ function Layout() {
         <Link to="/" aria-label="Tandem home"><Brand /></Link>
         <nav aria-label="Main navigation">
           {sections.map(({ name, path, icon: Icon }) => (
-            <NavLink key={path} to={path} end={path !== "/moneyleaks"}><Icon size={21} aria-hidden /><span>{name}</span></NavLink>
+            <NavLink key={path} to={path} end={path !== "/moneyleaks" && path !== "/community"}><Icon size={21} aria-hidden /><span>{name}</span></NavLink>
           ))}
         </nav>
         <span className="simulation"><Sprout size={16} aria-hidden /> Simulated finances</span>
@@ -192,6 +190,14 @@ function Intelligence({ audit = false }: { audit?: boolean }) {
   return <MoneyLeaks key={state.user.id} token={state.token} onExpired={signOut} />
 }
 
+function CommunityRoute() {
+  const { state, signOut } = useAuth()
+  const { username } = useParams()
+  if (state.status !== "signed-in") return null
+  if (username && !/^[a-zA-Z0-9_]{3,32}$/.test(username)) return <Navigate to="/community" replace />
+  return <Community key={`${state.user.id}:${username ?? ""}`} token={state.token} onExpired={signOut} viewer={state.user.username} username={username?.toLowerCase()} />
+}
+
 function SectionPage({ section }: { section: (typeof sections)[number] }) {
   const Icon = section.icon
   return (
@@ -219,9 +225,9 @@ export function App() {
         <Route path="/simulator" element={<Simulator />} />
         <Route path="/moneyleaks" element={<Intelligence />} />
         <Route path="/moneyleaks/audit/:transactionId" element={<Intelligence audit />} />
-        {sections.slice(3).map((section) => (
-          <Route key={section.path} path={section.path} element={<SectionPage section={section} />} />
-        ))}
+        <Route path="/explore" element={<SectionPage section={sections[3]} />} />
+        <Route path="/community" element={<CommunityRoute />} />
+        <Route path="/community/profiles/:username" element={<CommunityRoute />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

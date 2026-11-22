@@ -14,6 +14,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(String(254), unique=True)
     username: Mapped[str] = mapped_column(String(32), unique=True)
+    display_name: Mapped[str | None] = mapped_column(String(80))
     password_hash: Mapped[str] = mapped_column(String(255))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
@@ -85,4 +86,38 @@ class TransactionAudit(Base):
     )
     necessity_rating: Mapped[int]
     reflection: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class Post(Base):
+    __tablename__ = "posts"
+    __table_args__ = (
+        UniqueConstraint("author_id", "request_id", name="uq_post_author_request"),
+        CheckConstraint("post_type IN ('discussion', 'achievement')", name="ck_post_type"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    content: Mapped[str] = mapped_column(Text)
+    post_type: Mapped[str] = mapped_column(String(20))
+    request_id: Mapped[str] = mapped_column(String(36))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class PostLike(Base):
+    __tablename__ = "post_likes"
+
+    post_id: Mapped[int] = mapped_column(ForeignKey("posts.id", ondelete="CASCADE"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+
+
+class Comment(Base):
+    __tablename__ = "comments"
+    __table_args__ = (UniqueConstraint("user_id", "request_id", name="uq_comment_user_request"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    post_id: Mapped[int] = mapped_column(ForeignKey("posts.id", ondelete="CASCADE"), index=True)
+    content: Mapped[str] = mapped_column(Text)
+    request_id: Mapped[str] = mapped_column(String(36))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

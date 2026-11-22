@@ -1,5 +1,3 @@
-import { useCallback, useRef } from "react"
-import { api, ApiError } from "./api"
 import type { Entry } from "./banking"
 
 export type AuditInput = { necessity_rating: number; reflection: string | null }
@@ -30,21 +28,4 @@ export type GoalOption = { id: number; name: string }
 const dates = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeZone: "UTC" })
 export function financialDate(value: string) {
   return dates.format(new Date(value.length === 10 ? `${value}T00:00:00Z` : value))
-}
-
-export function requestError(error: unknown) {
-  return error instanceof ApiError ? error.message : "The server could not be reached. Please try again."
-}
-
-export function useIntelligenceApi(token: string, onExpired: () => void) {
-  const expired = useRef(onExpired)
-  expired.current = onExpired
-  return useCallback(async <T,>(path: string, options?: RequestInit) => {
-    try {
-      return await api<T>(path, options, token)
-    } catch (error) {
-      if (error instanceof ApiError && error.status === 401) expired.current()
-      throw error
-    }
-  }, [token])
 }

@@ -193,3 +193,20 @@ button, summary { cursor: pointer; }
 .bank-form textarea { width: 100%; border: 1px solid #ccd7cb; border-radius: .65rem; padding: .45rem .65rem; background: white; font-size: .94rem; resize: vertical; }
 .bank-total { min-width: 0; }
 .bank-total span { overflow-wrap: anywhere; }
+
+.community { max-width: 58rem; margin-inline: auto; }
+.community-profile-link { display: inline-flex; align-items: center; justify-content: center; gap: .45rem; padding: .65rem 1rem; border-radius: .7rem; border: 1px solid #abc9a268; background: #ffffff13; color: #f5f8e9; font-size: .92rem; font-weight: 800; white-space: nowrap; }
+.community-profile-link:hover { background: #ffffff23; }
+.community-feed, .community-comments { display: grid; gap: .8rem; }
+.community-feed > div > h2 { font-size: 1.25rem; font-weight: 800; }
+.community-post { min-width: 0; }
+.community-author { display: flex; align-items: center; gap: .65rem; min-width: 0; }
+.community-author > div { min-width: 0; overflow-wrap: anywhere; }
+.community-author .avatar { flex: none; font-size: .85rem; font-weight: 800; }
+.community-author p, .community-comments time { font-size: .8rem; color: var(--secondary-text); }
+.community-post-heading { align-items: center; }
+.community-achievement { display: inline-flex; align-items: center; gap: .3rem; font-size: .8rem; color: #735021; font-weight: 800; }
+.card .community-copy { color: var(--foreground); white-space: pre-wrap; overflow-wrap: anywhere; }
+.community-controls { display: flex; flex-wrap: wrap; gap: .5rem; }
+.community-controls button[aria-pressed="true"] { background: #f7e8ea; color: #842c37; }
+.community-comments { padding-top: .65rem; border-top: 1px solid var(--border); }

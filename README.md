@@ -67,3 +67,9 @@ After a simulated purchase, choose **Audit this purchase** or use its audit link
 MoneyLeaks reviews the last 365 UTC calendar days. It groups expense charges by normalized merchant name and category, looks for at least three similar charges on separate dates, and allows 5–9 days for weekly gaps and 25–35 days for monthly gaps. It annualizes the latest amount at 52 or 12 charges per year. Patterns with no charge within 14 or 50 days, respectively, are excluded from potential savings. Possible duplicates share a normalized merchant, amount, and UTC date. The estimates are prompts to review the charges and verify cancellation terms.
 
 To see sample recurring charges, a price increase, and a possible duplicate, use **Load demo data** from an empty simulation.
+
+## Community
+
+Open **Community** to publish a discussion or explicitly share a savings achievement. Members can like or unlike posts, leave comments, and open another member's profile. **My profile** lets you choose a display name and see your shared posts. A blank display name uses your username. Refresh the feed to see activity from another browser.
+
+Profiles and posts are visible to signed-in community members. Profiles display a username and display name. Achievements are written by their authors, and the feed receives no balances, transaction history, or goal records from the banking features.

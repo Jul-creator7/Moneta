@@ -9,6 +9,7 @@ from sqlalchemy.orm import sessionmaker
 
 from .api import router
 from .banking_api import router as banking_router
+from .community_api import router as community_router
 from .config import Settings
 from .goal_api import router as goal_router
 from .intelligence_api import router as intelligence_router
@@ -56,4 +57,5 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(banking_router, prefix="/api")
     app.include_router(goal_router, prefix="/api")
     app.include_router(intelligence_router, prefix="/api")
+    app.include_router(community_router, prefix="/api")
     return app
