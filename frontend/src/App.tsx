@@ -2,10 +2,12 @@ import { useState, type FormEvent } from "react"
 import {
   ArrowRight, Compass, House, LogOut, ScanSearch, Sprout, Target, Users,
 } from "lucide-react"
-import { Link, Navigate, NavLink, Outlet, Route, Routes, useLocation, useNavigate } from "react-router-dom"
+import { Link, Navigate, NavLink, Outlet, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom"
 import { api, ApiError, type User } from "./api"
 import { useAuth } from "./auth"
 import { BankingDashboard } from "./BankingDashboard"
+import { MoneyLeaks } from "./MoneyLeaks"
+import { PurchaseAudit } from "./PurchaseAudit"
 import { SavingsSimulator } from "./SavingsSimulator"
 import { Button } from "./components/ui/button"
 
@@ -14,11 +16,7 @@ const brand = "Tandem"
 const sections = [
   { name: "Home", path: "/", icon: House },
   { name: "Simulator", path: "/simulator", icon: Target },
-  {
-    name: "MoneyLeaks", path: "/moneyleaks", icon: ScanSearch,
-    description: "Review recurring expenses and find opportunities to keep more of your money.",
-    features: ["Review subscriptions", "Spot duplicate charges", "Audit past purchases"],
-  },
+  { name: "MoneyLeaks", path: "/moneyleaks", icon: ScanSearch },
   {
     name: "Explore", path: "/explore", icon: Compass,
     description: "Find local deals that fit what you already planned to buy.",
@@ -56,7 +54,9 @@ function AuthPage({ registration = false }: { registration?: boolean }) {
   const navigate = useNavigate()
   const location = useLocation()
   const returnTo = location.state?.from
-  const destination = sections.some(({ path }) => path === returnTo) ? returnTo : "/"
+  const destination = typeof returnTo === "string" && (
+    sections.some(({ path }) => path === returnTo) || /^\/moneyleaks\/audit\/[1-9]\d*$/.test(returnTo)
+  ) ? returnTo : "/"
 
   if (state.status === "signed-in") return <Navigate to={destination} replace />
   if (state.status !== "signed-out") return <SessionStatus />
@@ -141,7 +141,7 @@ function Layout() {
         <Link to="/" aria-label="Tandem home"><Brand /></Link>
         <nav aria-label="Main navigation">
           {sections.map(({ name, path, icon: Icon }) => (
-            <NavLink key={path} to={path} end><Icon size={21} aria-hidden /><span>{name}</span></NavLink>
+            <NavLink key={path} to={path} end={path !== "/moneyleaks"}><Icon size={21} aria-hidden /><span>{name}</span></NavLink>
           ))}
         </nav>
         <span className="simulation"><Sprout size={16} aria-hidden /> Simulated finances</span>
@@ -181,6 +181,17 @@ function Simulator() {
   return <SavingsSimulator key={state.user.id} token={state.token} onExpired={signOut} />
 }
 
+function Intelligence({ audit = false }: { audit?: boolean }) {
+  const { state, signOut } = useAuth()
+  const { transactionId } = useParams()
+  if (state.status !== "signed-in") return null
+  if (audit) {
+    if (!transactionId || !/^[1-9]\d*$/.test(transactionId)) return <Navigate to="/moneyleaks" replace />
+    return <PurchaseAudit key={`${state.user.id}:${transactionId}`} token={state.token} onExpired={signOut} transactionId={transactionId} />
+  }
+  return <MoneyLeaks key={state.user.id} token={state.token} onExpired={signOut} />
+}
+
 function SectionPage({ section }: { section: (typeof sections)[number] }) {
   const Icon = section.icon
   return (
@@ -206,7 +217,9 @@ export function App() {
       <Route element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="/simulator" element={<Simulator />} />
-        {sections.slice(2).map((section) => (
+        <Route path="/moneyleaks" element={<Intelligence />} />
+        <Route path="/moneyleaks/audit/:transactionId" element={<Intelligence audit />} />
+        {sections.slice(3).map((section) => (
           <Route key={section.path} path={section.path} element={<SectionPage section={section} />} />
         ))}
       </Route>

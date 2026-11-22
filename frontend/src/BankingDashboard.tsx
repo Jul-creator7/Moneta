@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState, type FormEvent } from "react"
 import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight, CircleDollarSign, Landmark, PiggyBank } from "lucide-react"
 import { Link } from "react-router-dom"
-import { api, ApiError } from "./api"
+import { api, ApiError, apiResponse } from "./api"
 import {
   expenseCategories, money, operations, readAmount,
   type Account, type Dashboard, type Entry, type History, type OperationType,
@@ -24,6 +24,7 @@ export function BankingDashboard({ username, token, onExpired }: {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState("")
   const [notice, setNotice] = useState("")
+  const [auditId, setAuditId] = useState<string | null>(null)
   const [actionError, setActionError] = useState("")
   const [pending, setPending] = useState(false)
   const [history, setHistory] = useState<History>()
@@ -62,20 +63,23 @@ export function BankingDashboard({ username, token, onExpired }: {
     return () => controller.abort()
   }, [refresh])
 
-  async function perform(path: string, message: string, body?: string) {
+  async function perform(path: string, message: string, body?: string, offerAudit = false) {
     if (mutation.current) return false
     mutation.current = true
     setPending(true)
     setNotice("")
+    setAuditId(null)
     setActionError("")
     try {
-      await call<void>(path, { method: "POST", body })
+      const response = await apiResponse(`/banking${path}`, { method: "POST", body }, token)
+      if (offerAudit) setAuditId(response.headers.get("X-Transaction-Id"))
       setConfirmReset(false)
       setHistory(undefined)
       setNotice(message)
       await refresh()
       return true
     } catch (error) {
+      if (error instanceof ApiError && error.status === 401) expired.current()
       setActionError(errorText(error))
       return false
     } finally {
@@ -91,7 +95,7 @@ export function BankingDashboard({ username, token, onExpired }: {
     request.current = { body, id }
     const saved = await perform("/operations", "Simulated transaction recorded.", JSON.stringify({
       ...payload, operation_id: id,
-    }))
+    }), payload.transaction_type === "purchase")
     if (saved) request.current = undefined
     return saved
   }
@@ -165,7 +169,10 @@ export function BankingDashboard({ username, token, onExpired }: {
             </section>
           </div>
 
-          {notice && <p role="status" className="bank-feedback bank-success">{notice}</p>}
+          {notice && <div className="bank-feedback bank-success intelligence-feedback">
+            <p role="status">{notice}</p>
+            {auditId && <Link to={`/moneyleaks/audit/${auditId}`}>Audit this purchase</Link>}
+          </div>}
           {actionError && <p role="alert" className="bank-feedback bank-error">{actionError}</p>}
 
           <section className="card bank-history" aria-labelledby="history-title">
@@ -277,6 +284,7 @@ function TransactionList({ accounts, entries }: { accounts: Account[]; entries: 
             <span className="bank-entry-icon"><Icon size={18} aria-hidden /></span>
             <div><strong>{entry.merchant_name || entry.description}</strong>
               <p>{accounts.find((account) => account.id === entry.account_id)?.name} · {entry.category} · {dates.format(new Date(entry.created_at))}</p>
+              {entry.transaction_type === "purchase" && <Link to={`/moneyleaks/audit/${entry.id}`}>Audit purchase<span className="sr-only"> from {entry.merchant_name || entry.description}</span></Link>}
             </div>
             <strong className={entry.amount_minor > 0 ? "bank-positive" : ""}>{entry.amount_minor > 0 ? "+" : ""}{money(entry.amount_minor)}</strong>
           </li>

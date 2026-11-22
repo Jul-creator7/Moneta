@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from sqlalchemy.orm import Session
 
 from . import banking_service
@@ -27,9 +27,10 @@ def history(
 
 
 @router.post("/operations", status_code=204)
-def record(operation: Operation, user: CurrentUser, db: Database):
+def record(operation: Operation, user: CurrentUser, db: Database, response: Response):
     try:
-        banking_service.record(db, user.id, operation)
+        transaction_id = banking_service.record(db, user.id, operation)
+        response.headers["X-Transaction-Id"] = str(transaction_id)
     except banking_service.BankingConflict as error:
         raise HTTPException(409, str(error)) from error
 

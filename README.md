@@ -59,3 +59,11 @@ Load demo data into empty accounts from Home. Reset clears the signed-in user's 
 In **Simulator**, create a goal with a target amount, an optional target date, and a planned contribution. Transfer simulated money into savings on **Home** and reserve it by setting the goal's total allocation. Lower the allocation to release it. Purchases, bills, and transfers from savings cannot use funds reserved for goals. Resetting the banking simulation clears allocations and keeps goal plans.
 
 The purchase comparison estimates two timelines using the goal's allocated amount and planned contribution. The first contribution lands 30 days after the estimate date in UTC, and each subsequent contribution lands 30 days later. The purchase can reduce the goal's allocation immediately or divert upcoming contributions until the purchase amount is covered. An already-funded goal stays complete when the purchase only diverts future contributions. A zero contribution leaves an unfinished goal without an estimated completion date. Comparing a purchase leaves all accounts and allocations intact.
+
+## Purchase audits and MoneyLeaks
+
+After a simulated purchase, choose **Audit this purchase** or use its audit link in Home's transaction history. Save a necessity rating from 1 to 10 and an optional private reflection. You can revisit and edit saved audits on **MoneyLeaks**. Suggestions are general options based on the purchase category. The goal estimate models the purchase cost as diverted upcoming contributions. Resetting the simulation clears the associated audits.
+
+MoneyLeaks reviews the last 365 UTC calendar days. It groups expense charges by normalized merchant name and category, looks for at least three similar charges on separate dates, and allows 5–9 days for weekly gaps and 25–35 days for monthly gaps. It annualizes the latest amount at 52 or 12 charges per year. Patterns with no charge within 14 or 50 days, respectively, are excluded from potential savings. Possible duplicates share a normalized merchant, amount, and UTC date. The estimates are prompts to review the charges and verify cancellation terms.
+
+To see sample recurring charges, a price increase, and a possible duplicate, use **Load demo data** from an empty simulation.

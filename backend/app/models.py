@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from sqlalchemy import BigInteger, CheckConstraint, Date, DateTime, ForeignKey, String, UniqueConstraint, func
+from sqlalchemy import BigInteger, CheckConstraint, Date, DateTime, ForeignKey, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -69,4 +69,20 @@ class SavingsGoal(Base):
     allocated_minor: Mapped[int] = mapped_column(BigInteger, server_default="0")
     monthly_minor: Mapped[int] = mapped_column(BigInteger)
     target_date: Mapped[date | None] = mapped_column(Date)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class TransactionAudit(Base):
+    __tablename__ = "transaction_audits"
+    __table_args__ = (
+        CheckConstraint("necessity_rating BETWEEN 1 AND 10", name="ck_audit_rating_range"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    transaction_id: Mapped[int] = mapped_column(
+        ForeignKey("transactions.id", ondelete="CASCADE"), unique=True,
+    )
+    necessity_rating: Mapped[int]
+    reflection: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

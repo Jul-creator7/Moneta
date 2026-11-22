@@ -115,8 +115,8 @@ def test_demo_history_reset_and_isolation(client):
     page = client.get("/api/banking/transactions?limit=3", headers=first).json()
     assert len(page["transactions"]) == 3
     assert page["next_offset"] == 3
-    remaining = client.get("/api/banking/transactions?limit=10&offset=3", headers=first).json()
-    assert len(remaining["transactions"]) == 4
+    remaining = client.get("/api/banking/transactions?limit=20&offset=3", headers=first).json()
+    assert len(remaining["transactions"]) == 13
     assert remaining["next_offset"] is None
     assert {entry["id"] for entry in page["transactions"]}.isdisjoint(entry["id"] for entry in remaining["transactions"])
     assert client.post("/api/banking/reset", headers=second).status_code == 204

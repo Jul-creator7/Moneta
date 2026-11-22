@@ -40,7 +40,7 @@ def lock_user(db: Session, user_id: int) -> None:
 
 def post_entries(
     db: Session, accounts: dict[str, BankAccount], operation: Operation, created_at: datetime,
-) -> None:
+) -> Transaction:
     kind = operation.transaction_type
     source = accounts[operation.account_type]
     amount = operation.amount_minor
@@ -63,9 +63,10 @@ def post_entries(
             raise BankingConflict("This operation exceeds the simulated account limit.")
 
     operation_id = str(operation.operation_id)
+    entries = []
     for account, delta in legs:
         account.balance_minor += delta
-        db.add(Transaction(
+        entries.append(Transaction(
             user_id=account.user_id,
             account_id=account.id,
             amount_minor=delta,
@@ -77,9 +78,11 @@ def post_entries(
             transfer_group_id=operation_id if kind == "transfer" else None,
             created_at=created_at,
         ))
+    db.add_all(entries)
+    return entries[0]
 
 
-def record(db: Session, user_id: int, operation: Operation) -> None:
+def record(db: Session, user_id: int, operation: Operation) -> int:
     lock_user(db, user_id)
     accounts = accounts_for(db, user_id)
     previous = db.scalars(select(Transaction).where(
@@ -103,8 +106,11 @@ def record(db: Session, user_id: int, operation: Operation) -> None:
         ):
             raise BankingConflict("This request ID was already used for a different operation.")
     else:
-        post_entries(db, accounts, operation, datetime.now(timezone.utc))
+        source = post_entries(db, accounts, operation, datetime.now(timezone.utc))
+        db.flush()
+    transaction_id = source.id
     db.commit()
+    return transaction_id
 
 
 def history(db: Session, user_id: int, offset: int, limit: int) -> History:
@@ -172,6 +178,22 @@ def load_demo(db: Session, user_id: int) -> None:
             amount_minor=amount, merchant_name=merchant, category=category,
             description=description, destination=destination,
         ), now)
+    history = [
+        (90, "income", 145000, None, None, "Demo historical paycheque"),
+        (65, "bill", 1299, "Stream View", "Entertainment", "Demo streaming subscription"),
+        (35, "bill", 1299, "STREAM-VIEW", "Entertainment", "Demo streaming subscription"),
+        (5, "bill", 1699, "Stream View", "Entertainment", "Demo streaming subscription"),
+        (17, "bill", 799, "City Fitness", "Other", "Demo weekly membership"),
+        (10, "bill", 799, "City Fitness", "Other", "Demo weekly membership"),
+        (3, "bill", 799, "City Fitness", "Other", "Demo weekly membership"),
+        (2, "purchase", 1450, "Corner Cafe", "Food", "Demo cafe payment"),
+        (2, "purchase", 1450, "Corner Cafe", "Food", "Demo cafe payment"),
+    ]
+    for days, kind, amount, merchant, category, description in history:
+        post_entries(db, accounts, Operation(
+            operation_id=uuid4(), transaction_type=kind, account_type="chequing",
+            amount_minor=amount, merchant_name=merchant, category=category, description=description,
+        ), now - timedelta(days=days))
     db.commit()
 
 

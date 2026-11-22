@@ -179,3 +179,17 @@ button, summary { cursor: pointer; }
 @media (max-width: 520px) {
   .goal-column .bank-fields { grid-template-columns: 1fr; }
 }
+
+.intelligence-grid > .card { min-width: 0; }
+.intelligence-feedback, .intelligence-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: .45rem .8rem; }
+.intelligence-feedback a, .intelligence-back { color: #24563d; font-weight: 800; text-decoration: underline; text-underline-offset: .2em; }
+.intelligence-back { display: inline-flex; align-items: center; gap: .35rem; justify-self: start; }
+.intelligence-list { display: grid; gap: .1rem; }
+.intelligence-list > li { padding: .75rem 0; border-top: 1px solid var(--border); overflow-wrap: anywhere; }
+.intelligence-list h3, .intelligence-grid h3 { font-weight: 800; }
+.intelligence-list .intelligence-flag { color: #784c22; }
+.intelligence-list .intelligence-reflection { white-space: pre-wrap; margin-top: .25rem; }
+.intelligence-alternatives { list-style: disc; padding-left: 1.15rem; margin-top: .35rem; }
+.bank-form textarea { width: 100%; border: 1px solid #ccd7cb; border-radius: .65rem; padding: .45rem .65rem; background: white; font-size: .94rem; resize: vertical; }
+.bank-total { min-width: 0; }
+.bank-total span { overflow-wrap: anywhere; }

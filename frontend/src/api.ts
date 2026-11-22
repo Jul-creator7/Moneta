@@ -9,7 +9,7 @@ export class ApiError extends Error {
   }
 }
 
-export async function api<T>(path: string, options: RequestInit = {}, token?: string): Promise<T> {
+export async function apiResponse(path: string, options: RequestInit = {}, token?: string): Promise<Response> {
   const headers = new Headers(options.headers)
   if (options.body) headers.set("Content-Type", "application/json")
   if (token) headers.set("Authorization", `Bearer ${token}`)
@@ -21,5 +21,10 @@ export async function api<T>(path: string, options: RequestInit = {}, token?: st
       : detail
     throw new ApiError(response.status, message || "The request failed. Please try again.")
   }
+  return response
+}
+
+export async function api<T>(path: string, options?: RequestInit, token?: string): Promise<T> {
+  const response = await apiResponse(path, options, token)
   return response.status === 204 ? (undefined as T) : response.json()
 }
